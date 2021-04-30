@@ -1,6 +1,13 @@
 import app from './app';
 import * as http from 'http';
 import logger from './config/logger';
+import { setBaseDir } from './utils/ioUtils';
+import path from 'path';
+
+/**
+ * Set the app base path to the root path of the application outside of dist folder
+ * */
+setBaseDir(path.join(__dirname, '../'));
 
 /* TODO: Move this to environment variables */
 const port = 5000;
