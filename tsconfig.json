@@ -12,5 +12,5 @@
           "*": ["node_modules/*"]
         }
       },
-      "include": ["src/**/*"]
+      "include": ["src/**/*", "xss-clean.d.ts"]
 }
