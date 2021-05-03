@@ -9,6 +9,10 @@ interface IGridData {
     colors: Color[]
 }
 
+/**
+ * Initialize the grid with its default initial values
+ * @return gridData IGridData
+ */
 export function makeGrid() {
     const gridData: IGridData = {
         size: 6,
@@ -38,6 +42,10 @@ export function makeGrid() {
     return gridData;
 }
 
+/**
+ * Clears the seen positions during flooding
+ * @param gridData IGridData
+ */
 function clearSeen(gridData: IGridData) {
     const { size, seen } = gridData;
 
@@ -48,8 +56,9 @@ function clearSeen(gridData: IGridData) {
 
 /**
  * Resets the game
+ * Expose an API endpoint to call this function to reset the game to its original state
  */
-function reset(gridData: IGridData) {
+export function reset(gridData: IGridData) {
     const { size, grid, original } = gridData;
 
     for(let i = 0; i < size; i++) {
@@ -59,60 +68,83 @@ function reset(gridData: IGridData) {
     }
 }
 
-const countConnected = (i: number, j: number, c: number, gridData: IGridData): number => {
+/**
+ * Counts the connect cells and returns the number
+ * @param index1 number
+ * @param index2 number
+ * @param color number - The chosen color index
+ * @param gridData IGridData
+ * @return count number
+ */
+const countConnected = (index1: number, index2: number, color: number, gridData: IGridData): number => {
     const { size, grid, seen } = gridData;
 
-    if (i < 0 || j < 0 || i >= size || j >= size || seen[i][j] || grid[i][j] != c) {
+    if (index1 < 0 || index2 < 0 || index1 >= size || index2 >= size || seen[index1][index2] || grid[index1][index2] != color) {
         return 0;
     }
 
-    seen[i][j] = true;
+    seen[index1][index2] = true;
 
-    return countConnected(i, j - 1, c, gridData) +
-        countConnected(i, j + 1, c, gridData) +
-        countConnected(i - 1, j, c, gridData) +
-        countConnected(i + 1, j, c, gridData) + 1;
+    return countConnected(index1, index2 - 1, color, gridData) +
+        countConnected(index1, index2 + 1, color, gridData) +
+        countConnected(index1 - 1, index2, color, gridData) +
+        countConnected(index1 + 1, index2, color, gridData) + 1;
 };
 
-const _flood = (i: number, j: number, original: number, replace: number, gridData: IGridData): number => {
+
+/**
+ * Counts the flooded cells and return the number
+ * @param index1
+ * @param index2
+ * @param original
+ * @param replace
+ * @param gridData
+ * @return count number
+ */
+const countFlooded = (index1: number, index2: number, original: number, replace: number, gridData: IGridData): number => {
     const { size, grid, seen } = gridData;
 
-    if (i < 0 || j < 0 || i >= size || j >= size || seen[i][j]) {
+    if (index1 < 0 || index2 < 0 || index1 >= size || index2 >= size || seen[index1][index2]) {
         return 0;
     }
 
-    seen[i][j] = true;
+    seen[index1][index2] = true;
 
-    if (grid[i][j] === original) {
-        grid[i][j] = replace;
+    if (grid[index1][index2] === original) {
+        grid[index1][index2] = replace;
 
-        return 1 + _flood(i, j + 1, original, replace, gridData) +
-            _flood(i, j - 1, original, replace, gridData) +
-            _flood(i + 1, j, original, replace, gridData) +
-            _flood(i - 1, j, original, replace, gridData);
-    } else if (grid[i][j] === replace) {
+        return 1 + countFlooded(index1, index2 + 1, original, replace, gridData) +
+            countFlooded(index1, index2 - 1, original, replace, gridData) +
+            countFlooded(index1 + 1, index2, original, replace, gridData) +
+            countFlooded(index1 - 1, index2, original, replace, gridData);
+    } else if (grid[index1][index2] === replace) {
         // Unmark this cell for countConnected.
-        seen[i][j] = false;
-        return countConnected(i, j, replace, gridData);
+        seen[index1][index2] = false;
+        return countConnected(index1, index2, replace, gridData);
     }
 
     return 0;
 };
 
-export function flood(c: number, gridData: IGridData) {
+/**
+ * This is the flood function
+ * @param colorIndex
+ * @param gridData
+ * @return checkSolved boolean - If the grid is solved or not
+ */
+export function flood(colorIndex: number, gridData: IGridData): boolean {
     const { size, grid } = gridData;
-    let { solved } = gridData;
 
-    if (grid[0][0] == c) {
+    if (grid[0][0] == colorIndex) {
         return false;
     }
 
     clearSeen(gridData);
 
     // Check if number of cells flooded is equal to size of grid.
-    const countFlooded = _flood(0, 0, grid[0][0], c, gridData);
-    const checkSolved = countFlooded === size * size;
+    const countFloodedNumber = countFlooded(0, 0, grid[0][0], colorIndex, gridData);
+    const checkSolved = countFloodedNumber === size * size;
 
-    gridData.solved = solved;
+    gridData.solved = checkSolved;
     return checkSolved;
 }
