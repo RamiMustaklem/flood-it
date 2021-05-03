@@ -6,10 +6,11 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc & node .",
-    "dev": "tsc -w & nodemon ."
+    "dev": "tsc -w & cross-env NODE_ENV=development nodemon src/index.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "express": "^4.17.1",
     "helmet": "^4.5.0",
     "http-status": "^1.5.0",
