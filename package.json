@@ -7,7 +7,8 @@
     "build": "tsc",
     "start": "tsc & node .",
     "dev": "tsc -w & cross-env NODE_ENV=development nodemon src/index.js",
-    "test:unit": "jest"
+    "test:unit": "jest",
+    "test:unit:coverage": "jest --coverage ./src"
   },
   "dependencies": {
     "cors": "^2.8.5",
