@@ -1,11 +1,11 @@
 type Color = 'red' | 'green' | 'blue';
 
-interface IGridData {
+export interface IGridData {
     size: number;
     solved: boolean;
-    grid: [number[]];
-    original: [number[]];
-    seen: [boolean[]];
+    grid: number[][];
+    original: number[][];
+    seen: boolean[][];
     colors: Color[]
 }
 
