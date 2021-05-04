@@ -42,7 +42,7 @@ export const makeDataDir = async (baseDir: string) => {
     try {
         const getRootDirList = await fsPromises.readdir(`${baseDir}`);
         if (!getRootDirList.includes('data')) {
-            return await fsPromises.mkdir(`${baseDir}data`);
+            return await fsPromises.mkdir(`${baseDir}/data`);
         }
     } catch (e) {
         logger.error('error creating data directory', e);
